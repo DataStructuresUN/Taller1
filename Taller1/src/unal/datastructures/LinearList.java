@@ -1,3 +1,4 @@
+package unal.datastructures;
 public interface LinearList<T> 
 {
 	boolean isEmpty( );
