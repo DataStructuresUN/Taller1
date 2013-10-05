@@ -200,7 +200,7 @@ public class ArrayLinearList<T> implements LinearList<T>, Iterable<T>
 	   // test toString
 	   System.out.println( "The list is " + x );
 		// output using an iterator
-		Iterator y = x.iterator( );
+		Iterator<Integer> y = x.iterator( );
 		while( y.hasNext( ) )
 		System.out.print( y.next( ) + " " );
 		System.out.println( );
