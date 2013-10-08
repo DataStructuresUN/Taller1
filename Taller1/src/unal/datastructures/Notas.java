@@ -3,7 +3,6 @@ package unal.datastructures;
 import java.io.*;
 
 /**
- * TODO: Implement methods to serialize / deserialize objects
  * TODO: Implement menu
  * TODO: Implement command parser
  * TODO: Implement miscellaneous methods (As described on Assignment requirements)
@@ -46,50 +45,50 @@ public class Notas
 		return true;
 	}
 	
+	public static void menu()
+	{
+		System.out.println("----MENU----");
+		System.out.println("add ID grade - Add a grade to a student");
+		System.out.println("apply_gpa - Apply GPA for all registered students");
+		System.out.println("create ID name - Create a new register for a student and prompt for grades information");
+		System.out.println("create ID * - Create a new register and prompt for each field information");
+		System.out.println("edit ID - Allows to modify all accounts fields");
+		System.out.println("query ID - Print student information");
+		System.out.println("menu - Print main menu");
+		System.out.println("remove ID - Remove a student register");
+		System.out.println("quit - Quit the system");
+	}
+	
+	public static void commandParser()
+	{
+		
+	}
+	
 	public static void main(String[] args)
 	{
 		if(checkArgs(args))
 			if(checkFile(args[0]))
-				System.out.println("OK"); //Testing methods
+				menu(); //Testing methods
 		
 		//TODO: Erase this block of testing
 		//Start : Testing Serialization
-		Student s = new Student();
-		try 
-		{
-			ObjectOutputStream oos = new ObjectOutputStream(new FileOutputStream(args[0]));
-			oos.writeObject(s);
-			oos.close();
-		} 
-		catch (IOException e) 
-		{
-			e.printStackTrace();
-		}
-		
-		Student q = new Student();
-		
-		try 
-		{
-			ObjectInputStream ois = new ObjectInputStream(new FileInputStream(args[0]));
-			q = (Student) ois.readObject();
-			ois.close();
-			System.out.println(q);
-		}
-		catch (IOException | ClassNotFoundException e) 
-		{
-			e.printStackTrace();
-		}
+//		Student s = new Student();
+//		ArrayLinearListImproved<Student> a = new ArrayLinearListImproved<Student>();
+//		
+//		a.add(0, s);
+//		
+//		a.save(args[0]);
 		//End : Testing serialization 
 	}
 }
 
-class Student implements Serializable
+class Student implements Serializable, Comparable<Student>
 {
 	private static final long serialVersionUID = -8527297899691693432L;
 	
 	private int id;
 	private String name;
-	private ArrayLinearList<Double> grades = new ArrayLinearList<>();
+	private ArrayLinearListImproved<Double> grades = new ArrayLinearListImproved<>();
 	private double gpa;
 	
 	public Student() 
@@ -100,7 +99,7 @@ class Student implements Serializable
 		this.gpa = -1;
 	}
 	
-	public Student(int id, String name, ArrayLinearList<Double> grades,	double gpa) 
+	public Student(int id, String name, ArrayLinearListImproved<Double> grades,	double gpa) 
 	{
 		this.id = id;
 		this.name = name;
@@ -128,12 +127,12 @@ class Student implements Serializable
 		this.name = name;
 	}
 	
-	public ArrayLinearList<Double> getGrades() 
+	public ArrayLinearListImproved<Double> getGrades() 
 	{
 		return grades;
 	}
 	
-	public void setGrades(ArrayLinearList<Double> grades) 
+	public void setGrades(ArrayLinearListImproved<Double> grades) 
 	{
 		this.grades = grades;
 	}
@@ -163,5 +162,11 @@ class Student implements Serializable
 		sb.append("\nGPA : " + gpa);
 		
 		return new String(sb);
+	}
+
+	@Override
+	public int compareTo(Student arg0) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
