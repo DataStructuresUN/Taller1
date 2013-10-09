@@ -4,16 +4,14 @@ import java.io.*;
 import java.util.*;
 
 /**
- * TODO: Implement menu
- * TODO: Implement command parser
  * TODO: Implement miscellaneous methods (As described on Assignment requirements)
  * @author JhonAlx
  */
-
-
-public class Notas
+@SuppressWarnings("serial")
+public class Notas implements Serializable
 {
-	private static ArrayLinearListImproved<Student> a;
+	//static ArrayLinearListImproved<Student> a;
+	private static String fileName;
 	
 	/**
 	 * Check the length of args[] to validate correct parameter input
@@ -48,7 +46,7 @@ public class Notas
 		return true;
 	}
 
-	public static boolean checkIfExists(int id)
+	public static boolean checkIfExists(int id, ArrayLinearListImproved<Student> a)
 	{
 		for(int i = 0; i < a.size(); i++)
 		{
@@ -58,72 +56,214 @@ public class Notas
 		return false;
 	}
 	
-	
 	public static void menu()
 	{
 		System.out.println("-------------------------------------------");
-		System.out.println("add ID grade - Add a grade to a student");
-		System.out.println("apply_rounding - Apply GPA for all registered students");
-		System.out.println("create ID name - Create a new register for a student and prompt for grades information");
-		System.out.println("create ID * - Create a new register and prompt for each field information");
-		System.out.println("edit ID - Allows to modify all accounts fields");
-		System.out.println("query ID - Print student information");
-		System.out.println("menu - Print main menu");
-		System.out.println("remove ID - Remove a student register");
-		System.out.println("quit - Quit the system");
+		System.out.println("apply_rounding (a) - Round grades == 2.9 to 3.0");
+		System.out.println("add ID grade (ad) - Add a grade to a student");
+		System.out.println("create ID name grades (c) - Create a new register for a student ");
+		System.out.println("create ID * (c) - Create a new register and prompt for each field information");
+		System.out.println("edit ID (e) - Allows to modify all accounts fields");
+		System.out.println("menu (m) - Print main menu");
+		System.out.println("remove ID (r) - Remove a student register");
+		System.out.println("query ID (q) - Print student information");
+		System.out.println("quit (qu) - Quit the system");
 	}
 
-	public static ArrayLinearListImproved<Student> loadData(String fn)
-	{
-		ArrayLinearListImproved<Student> a = new ArrayLinearListImproved<>();
-		a.load(fn);
-
-		return a;
-	}
-
-	public static void commandParser(String[] command)
+	public static void commandParser(String[] command, ArrayLinearListImproved<Student> a)
 	{
 		switch(command[0])
 		{
 			case "apply_rounding":
-				System.out.println("Rounding");
+				applyRounding(a);
 				break;
+				
 			case "a":
-				System.out.println("Rounding");
+				applyRounding(a);
 				break;
+				
+			case "add":
+				addNotes(a, command[1]);
+				break;
+				
+			case "ad":
+				addNotes(a, command[1]);
+				break;
+				
 			case "create":
 				if(command.length == 4)
-					createWithParameters(command);
+					createWithParameters(command, a);
 				else
 					if(command.length == 3 && command[2].equalsIgnoreCase("*"))
-						createWithPrompt(command[1]);
+						createWithPrompt(command[1], a);
+					else
+					{
+						System.out.println("Command line unknown or incomplete!");
+					}
+				break;
+				
+			case "c":
+				if(command.length == 4)
+					createWithParameters(command, a);
+				else
+					if(command.length == 3 && command[2].equalsIgnoreCase("*"))
+						createWithPrompt(command[1], a);
 					else
 					{
 						System.out.println("Command line unknown or incomplete!");
 						menu();
 					}
 				break;
-			case "c":
-				System.out.println("Creating");
+				
+			case "edit":
+				changeName(command[1], a);
 				break;
-			case "quit":
+			
+			case "e":
+				changeName(command[1], a);
 				break;
-			case "q":
-				break;
-			default:
-				System.out.println("Invalid command");
+				
+			case "menu":
 				menu();
+				break;
+				
+			case "m":
+				menu();
+				break;
+				
+			case "print":
+				print(a);
+				break;
+				
+			case "p":
+				print(a);
+				break;
+				
+			case "query":
+				query(command[1], a);
+				break;
+			
+			case "q":
+				query(command[1], a);
+				break;
+				
+			case "quit":
+				System.out.println(fileName);
+				System.out.println("Saving data file to " + fileName + "...");
+				a.save(fileName);
+				System.out.println("Thank you, I enjoyed serving you!");
+				break;
+				
+			case "qu":
+				System.out.println(fileName);
+				System.out.println("Saving data file to " + fileName + "...");
+				a.save(fileName);
+				System.out.println("Thank you, I enjoyed serving you!");
+				break;
+				
+			case "remove":
+				remove(command[1], a);
+				break;
+				
+			case "r":
+				remove(command[1], a);
+				break;
+				
+			default:
+				System.out.println("Invalid command!");
 				break;
 		}
 	}
 
-	public static void createWithParameters(String[] params)
+	public static void remove(String param, ArrayLinearListImproved<Student> a)
 	{
-		for(String q : params)
-			System.out.println(q);
+		int id = -1;
+		
+		try
+		{
+			id = Integer.parseInt(param);
+		}
+		catch(NumberFormatException e)
+		{
+			System.out.println("Invalid parameters! Try again.");
+			return;
+		}
+		
+		if(checkIfExists(id, a))
+			for(int i = 0; i < a.size(); i++)
+			{
+				if(a.get(i).getId() == id)
+				{
+					a.remove(i);
+					return;
+				}
+			}
+		else
+			System.out.println("Error - ID doesn't exists!");
 	}
 	
-	public static void createWithPrompt(String param)
+	public static void query(String param, ArrayLinearListImproved<Student> a)
+	{
+		int id = -1;
+		
+		try
+		{
+			id = Integer.parseInt(param);
+		}
+		catch(NumberFormatException e)
+		{
+			System.out.println("Invalid parameters! Try again.");
+			return;
+		}
+		if(checkIfExists(id, a))
+			for(int i = 0; i < a.size(); i++)
+			{
+				if(a.get(i).getId() == id)
+					System.out.println(a.get(i));
+			}
+		else
+			System.out.println("Error - ID doesn't exists");
+	}
+	
+	public static void createWithParameters(String[] params, ArrayLinearListImproved<Student> a)
+	{
+		int id = -1;
+		ArrayLinearListImproved<Double> ar = new ArrayLinearListImproved<>();
+		String name;
+		
+		try
+		{
+			id = Integer.parseInt(params[1]);
+		}
+		catch(NumberFormatException e)
+		{
+			System.out.println("Invalid parameters! Try again");
+			return;
+		}
+		
+		if(checkIfExists(id, a))
+			System.out.println("Error - Student already exists!");
+		else
+		{
+			name = params[2];
+			
+			params[3] = params[3].replaceAll("\\[+", "");
+			params[3] = params[3].replaceAll("\\]+", "");
+			
+			String[] numbers = params[3].split("\\,");
+			
+			for(int i = 0; i < numbers.length; i++)
+			{
+				ar.add(0, Double.parseDouble(numbers[i]));
+			}
+			
+			Student s = new Student(id, name, ar, 0);
+			
+			a.add(a.size(), s);
+		}
+	}
+	
+	public static void createWithPrompt(String param, ArrayLinearListImproved<Student> a)
 	{
 		Scanner sn = new Scanner(System.in);
 		int id = -1, n;
@@ -137,9 +277,10 @@ public class Notas
 		catch(NumberFormatException e)
 		{
 			System.out.println("Invalid parameter! Try again");
+			return;
 		}
 		
-		if(checkIfExists(id))
+		if(checkIfExists(id, a))
 			System.out.println("Error - Student already exists!");
 		else
 		{
@@ -161,46 +302,154 @@ public class Notas
 			a.add(a.size(), s);	
 		}
 	}
-//	public static void applyRounding(ArrayLinearListImproved<Student> a)
-//	{
-//		for(int i = 0; i < a.size(); i++)
-//		{
-//			ArrayLinearListImproved<Double> d = a.get(i).getGrades();
-//			
-//			for(int j = 0; j < d.size(); j++)
-//			{
-//				if(d.get(j) == 2.9)
-//					d.element[j] += 0.1;
-//			}
-//		}
-//	}
 	
-	public static void main(String[] args)
+	public static void applyRounding(ArrayLinearListImproved<Student> a)
 	{
-//		ArrayLinearListImproved<Double> d = new ArrayLinearListImproved<>();
-//		d.add(0, 2.9);
-//		d.add(1, 2.9);
-//		d.add(2, 2.5);
-//		d.add(3, 2.5);
-//		d.add(4, 5.0);
-//		d.add(5, 2.9);
-//		
-//		Student s = new Student(0, "pepito", d, 0);
-//		
-//		ArrayLinearListImproved<Student> a = new ArrayLinearListImproved<>();
-//		
-//		a.add(0, s);
-//		
-//		applyRounding(a);
-//		
-//		System.out.println(a);
-		
+		for(int i = 0; i < a.size(); i++)
+		{
+			ArrayLinearListImproved<Double> d = a.get(i).getGrades();
+			ArrayLinearListImproved<Double> copy = new ArrayLinearListImproved<>();
+			
+			for(int j = 0; j < d.size(); j++)
+			{
+				if(d.get(j) != 2.9)
+				{
+					copy.add(copy.size(), d.get(j));
+				}
+				else
+					copy.add(copy.size(), 3.0);
+			}
+			
+			a.get(i).setGrades(copy);
+		}
+	}
+	
+    public static void print( ArrayLinearListImproved<Student> aa )
+    {
+		System.out.print("|\tID\t|\tName\t|\tGrades\t|\tGPA\t|\n");
+		for(Student s : aa){
+			System.out.print( "|\t" + s.getId() + "\t|\t" );
+			System.out.print(  s.getName( ) + "\t|\t");
+			System.out.print( s.getGrades( ) + "\t|\t" );
+			System.out.print( s.getGpa( ) + "\t|\t\n" );
+		}	
+	}
+	
+    public static ArrayLinearListImproved<Double> addGrades( int n ) 
+    {
+    	ArrayLinearListImproved<Double> temp = new ArrayLinearListImproved<>();
+    	Scanner s = new Scanner(System.in);
+    	for(int i = 0; i < n; i++){
+    		System.out.println("Digite nota numero " + (i+1));
+    		double note = s.nextDouble();
+    		temp.add( i, note );
+    	} 
+    	return temp;
+    }
+    
+    public static void addNotes( ArrayLinearListImproved<Student> a, String param)
+    {
+    	int id = -1;
+		Scanner sn = new Scanner(System.in);
+    	
+		try
+		{
+			id = Integer.parseInt(param);
+		}
+		catch(NumberFormatException e)
+		{
+			System.out.println("Invalid parameters! Try again.");
+			return;
+		}
+		if(checkIfExists(id, a))
+    	for( Student s : a ){
+    		if( s.getId() == id){
+    			System.out.println("Digite numero de notas a añadir:");
+    			int num = Integer.parseInt(sn.nextLine());
+    			if (s.getGrades()== null) 
+    				s.setGrades( addGrades( num ) );
+    			else{
+    				for(Double grade : addGrades( num ) ) 
+    					s.getGrades().add( s.getGrades().size , grade);
+    			}
+    		}
+    	}
+    }
+
+    public static void changeName (String param, ArrayLinearListImproved<Student> a)
+    {
+    	int id = -1;
+		Scanner sn = new Scanner(System.in);
+    	
+		try
+		{
+			id = Integer.parseInt(param);
+		}
+		catch(NumberFormatException e)
+		{
+			System.out.println("Invalid parameters! Try again.");
+			return;
+		}
+		if(checkIfExists(id, a))
+		{
+			Scanner scan = new Scanner( System.in );
+	    	String oldName = null;
+	    	System.out.println( "Enter a new name: " );
+	    	String name = scan.nextLine( );
+	    	for( Student s : a ){
+	    		if( s.getId() == id){
+	    			oldName = s.getName(); 
+	    				s.setName( name );    			
+	    		}
+	    	}
+		}
+		else
+			System.out.println("Error - ID doesn't exists");
+    }
+    
+    public int getMax(ArrayLinearListImproved<Student> a)
+    {
+    	int size = 0;
+    	
+    	for(int i = 0; i < a.size(); i++)
+    	{
+    		if(a.get(i).getGrades().size() > size)
+    			size = a.get(i).getGrades().size();
+    	}
+    	
+    	return size;
+    }
+    
+    public void setGPA(ArrayLinearListImproved<Student> a)
+    {
+    	int s = getMax(a);
+    	
+    	for(int i = 0; i < a.size(); i++)
+    	{
+    		double sum = 0.0;
+    		
+    		for(int j = 0; j < a.get(i).getGrades().size(); j++)
+    		{
+    			sum += a.get(i).getGrades().get(j);
+    		}
+    		
+    		double avg = sum / s;
+    		
+    		a.get(i).setGpa(avg);
+    	}
+    }
+    
+    public static void main(String[] args)
+	{
+		ArrayLinearListImproved<Student> ar = new ArrayLinearListImproved<>();
 		
 		if(checkArgs(args))
 			if(checkFile(args[0]))
 			{
 				Scanner sn = new Scanner(System.in);
-				a = loadData(args[0]);
+				ar.load(args[0]);
+				
+				fileName = args[0];
 				String command = "";
 
 				System.out.println("Welcome to the automated Grades System");
@@ -208,25 +457,24 @@ public class Notas
 
 				menu();
 
-				System.out.print("command> ");
-				command = sn.nextLine();
-
-				String[] commandArray = command.split("\\s");
-				commandParser(commandArray);
-				
-				for(Student q : a)
-					System.out.println(q);
+				do
+				{
+					System.out.print("command> ");
+					command = sn.nextLine();
+					String[] commandArray = command.split("\\s");
+					commandParser(commandArray, ar);
+				}
+				while(!command.equalsIgnoreCase("quit") && !command.equalsIgnoreCase("q"));
 			}
 	}
 }
 
+@SuppressWarnings("serial")
 class Student implements Serializable, Comparable<Student>
 {
-	private static final long serialVersionUID = -8527297899691693432L;
-
 	private int id;
 	private String name;
-	private ArrayLinearListImproved<Double> grades = new ArrayLinearListImproved<>();
+	private ArrayLinearListImproved<Double> grades;
 	private double gpa;
 
 	public Student() 
@@ -305,8 +553,8 @@ class Student implements Serializable, Comparable<Student>
 	}
 
 	@Override
-	public int compareTo(Student arg0) {
-		// TODO Auto-generated method stub
+	public int compareTo(Student arg0) 
+	{
 		return 0;
 	}
 }
