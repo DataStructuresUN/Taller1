@@ -442,7 +442,8 @@ public class Notas implements Serializable
     public static void main(String[] args)
 	{
 		ArrayLinearListImproved<Student> ar = new ArrayLinearListImproved<>();
-		
+//		ar.add(0, new Student());
+//		ar.save(args[0]);
 		if(checkArgs(args))
 			if(checkFile(args[0]))
 			{
