@@ -49,6 +49,12 @@ public class Notas implements Serializable
 		return true;
 	}
 
+	/**
+	 * Checks if an ID already exists in the ArrayLinearListImproved<Student> 
+	 * @param id
+	 * @param a
+	 * @return true if ID exists in the ArrayLinearListImproved<Student>
+	 */
 	public static boolean checkIfExists(int id, ArrayLinearListImproved<Student> a)
 	{
 		for(int i = 0; i < a.size(); i++)
@@ -59,47 +65,84 @@ public class Notas implements Serializable
 		return false;
 	}
 	
+	/**
+	 * Prints the main menu
+	 */
 	public static void menu()
 	{
-		System.out.println("-------------------------------------------");
+		System.out.println("-------------------------------   Academic Information System    -----------------------------------");
+		System.out.println();
 		System.out.println("apply_rounding (a) - Round grades == 2.9 to 3.0");
-		System.out.println("apply_rounding (ap) - Calculate GPA for all registered students");
-		System.out.println("add ID grade (ad) - Add a grade to a student");
-		System.out.println("create ID name grades (c) - Create a new register for a student ");
+		System.out.println("apply_gpa (g) - Calculate GPA for all registered students");
+		System.out.println("add ID (d) - Add a grade to a student");
+		System.out.println("create ID name [grades (Comma separated list eg: [1,2,3])] (c) - Create a new register for a student");
 		System.out.println("create ID * (c) - Create a new register and prompt for each field information");
 		System.out.println("edit ID (e) - Allows to modify all accounts fields");
 		System.out.println("menu (m) - Print main menu");
 		System.out.println("remove ID (r) - Remove a student register");
 		System.out.println("query ID (q) - Print student information");
-		System.out.println("quit (qu) - Quit the system");
+		System.out.println("total (t) - Prints the course average");
+		System.out.println("quit (x) - Quit the system");
 	}
 
+	public static void totalAvg(ArrayLinearListImproved<Student> a)
+	{
+		double sum = 0;
+		
+		for(int i = 0; i < a.size(); i++)
+		{
+			sum += a.get(i).getGpa();
+		}
+		
+		System.out.print("Total course avg: ");
+		System.out.printf("%.2f",sum / a.size());
+		System.out.println();
+	}
+	
 	public static void commandParser(String[] command, ArrayLinearListImproved<Student> a)
 	{
 		switch(command[0])
 		{
 			case "apply_rounding":
-				applyRounding(a);
+				if(command.length > 1)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					applyRounding(a);
 				break;
 				
 			case "a":
-				applyRounding(a);
+				if(command.length > 1)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					applyRounding(a);
 				break;
 				
 			case "apply_gpa":
-				setGPA(a);
+				if(command.length > 1)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					setGPA(a);
 				break;
 			
-			case "ap":
-				setGPA(a);
+			case "g":
+				if(command.length > 1)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					setGPA(a);
 				break;
 				
 			case "add":
-				addNotes(a, command[1]);
+				if(command.length < 2 || command.length > 2)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					addNotes(a, command[1]);
 				break;
 				
-			case "ad":
-				addNotes(a, command[1]);
+			case "d":
+				if(command.length < 2 || command.length > 2)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					addNotes(a, command[1]);
 				break;
 				
 			case "create":
@@ -109,9 +152,7 @@ public class Notas implements Serializable
 					if(command.length == 3 && command[2].equalsIgnoreCase("*"))
 						createWithPrompt(command[1], a);
 					else
-					{
 						System.out.println("Command line unknown or incomplete!");
-					}
 				break;
 				
 			case "c":
@@ -121,62 +162,107 @@ public class Notas implements Serializable
 					if(command.length == 3 && command[2].equalsIgnoreCase("*"))
 						createWithPrompt(command[1], a);
 					else
-					{
 						System.out.println("Command line unknown or incomplete!");
-						menu();
-					}
 				break;
 				
 			case "edit":
-				changeName(command[1], a);
+				if(command.length < 2  || command.length > 2)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					changeName(command[1], a);
 				break;
 			
 			case "e":
-				changeName(command[1], a);
+				if(command.length < 2  || command.length > 2)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					changeName(command[1], a);
 				break;
 				
 			case "menu":
-				menu();
+				if(command.length > 1)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					menu();
 				break;
 				
 			case "m":
-				menu();
+				if(command.length > 1)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					menu();
 				break;
 				
 			case "print":
-				print(a);
+				if(command.length > 1)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					print(a);
 				break;
 				
 			case "p":
-				print(a);
+				if(command.length > 1)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					print(a);
 				break;
 				
 			case "query":
-				query(command[1], a);
+				if(command.length < 2  || command.length > 2)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					query(command[1], a);
 				break;
 			
 			case "q":
-				query(command[1], a);
+				if(command.length < 2  || command.length > 2)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					query(command[1], a);
 				break;
 				
 			case "quit":
-				System.out.println("Saving data file to " + fileName + "...");
-				saveData(fileName, a);
-				System.out.println("Thank you, I enjoyed serving you!");
+				if(command.length > 1)
+					System.out.println("Command line unknown or incomplete!");
+				else
+				{
+					System.out.println("Saving data file to " + fileName + "...");
+					saveData(fileName, a);
+					System.out.println("Thank you, I enjoyed serving you!");
+				}
 				break;
 				
-			case "qu":
-				System.out.println("Saving data file to " + fileName + "...");
-				saveData(fileName, a);
-				System.out.println("Thank you, I enjoyed serving you!");
+			case "x":
+				if(command.length > 1)
+					System.out.println("Command line unknown or incomplete!");
+				else
+				{
+					System.out.println("Saving data file to " + fileName + "...");
+					saveData(fileName, a);
+					System.out.println("Thank you, I enjoyed serving you!");
+				}
 				break;
 				
 			case "remove":
-				remove(command[1], a);
+				if(command.length < 2  || command.length > 2)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					remove(command[1], a);
 				break;
 				
 			case "r":
-				remove(command[1], a);
+				if(command.length < 2  || command.length > 2)
+					System.out.println("Command line unknown or incomplete!");
+				else
+					remove(command[1], a);
+				break;
+				
+			case "total":
+				totalAvg(a);
+				break;
+				
+			case "t":
+				totalAvg(a);
 				break;
 				
 			default:
@@ -374,7 +460,7 @@ public class Notas implements Serializable
 		if(checkIfExists(id, a))
     	for( Student s : a ){
     		if( s.getId() == id){
-    			System.out.println("Digite numero de notas a añadir:");
+    			System.out.println("Enter number of notes to add: ");
     			int num = Integer.parseInt(sn.nextLine());
     			if (s.getGrades()== null) 
     				s.setGrades( addGrades( num ) );
@@ -537,12 +623,15 @@ public class Notas implements Serializable
 
 				do
 				{
+					System.out.println();
 					System.out.print("command> ");
 					command = sn.nextLine();
 					String[] commandArray = command.split("\\s");
+					
+					commandArray[0] = commandArray[0].toLowerCase();
 					commandParser(commandArray, ar);
 				}
-				while(!command.equalsIgnoreCase("quit") && !command.equalsIgnoreCase("qu"));
+				while(!command.equalsIgnoreCase("quit") && !command.equalsIgnoreCase("x"));
 			}
 	}
 }
