@@ -7,9 +7,12 @@ import java.util.*;
  * TODO: Implement miscellaneous methods (As described on Assignment requirements)
  * @author JhonAlx
  */
-@SuppressWarnings("serial")
 public class Notas implements Serializable
 {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
 	//static ArrayLinearListImproved<Student> a;
 	private static String fileName;
 	
@@ -60,6 +63,7 @@ public class Notas implements Serializable
 	{
 		System.out.println("-------------------------------------------");
 		System.out.println("apply_rounding (a) - Round grades == 2.9 to 3.0");
+		System.out.println("apply_rounding (ap) - Calculate GPA for all registered students");
 		System.out.println("add ID grade (ad) - Add a grade to a student");
 		System.out.println("create ID name grades (c) - Create a new register for a student ");
 		System.out.println("create ID * (c) - Create a new register and prompt for each field information");
@@ -80,6 +84,14 @@ public class Notas implements Serializable
 				
 			case "a":
 				applyRounding(a);
+				break;
+				
+			case "apply_gpa":
+				setGPA(a);
+				break;
+			
+			case "ap":
+				setGPA(a);
 				break;
 				
 			case "add":
@@ -148,16 +160,14 @@ public class Notas implements Serializable
 				break;
 				
 			case "quit":
-				System.out.println(fileName);
 				System.out.println("Saving data file to " + fileName + "...");
-				a.save(fileName);
+				saveData(fileName, a);
 				System.out.println("Thank you, I enjoyed serving you!");
 				break;
 				
 			case "qu":
-				System.out.println(fileName);
 				System.out.println("Saving data file to " + fileName + "...");
-				a.save(fileName);
+				saveData(fileName, a);
 				System.out.println("Thank you, I enjoyed serving you!");
 				break;
 				
@@ -254,7 +264,7 @@ public class Notas implements Serializable
 			
 			for(int i = 0; i < numbers.length; i++)
 			{
-				ar.add(0, Double.parseDouble(numbers[i]));
+				ar.add(ar.size(), Double.parseDouble(numbers[i]));
 			}
 			
 			Student s = new Student(id, name, ar, 0);
@@ -340,8 +350,8 @@ public class Notas implements Serializable
     	ArrayLinearListImproved<Double> temp = new ArrayLinearListImproved<>();
     	Scanner s = new Scanner(System.in);
     	for(int i = 0; i < n; i++){
-    		System.out.println("Digite nota numero " + (i+1));
-    		double note = s.nextDouble();
+    		System.out.println("Enter grade #" + (i+1));
+    		double note = Double.parseDouble(s.nextLine());
     		temp.add( i, note );
     	} 
     	return temp;
@@ -407,7 +417,7 @@ public class Notas implements Serializable
 			System.out.println("Error - ID doesn't exists");
     }
     
-    public int getMax(ArrayLinearListImproved<Student> a)
+    public static int getMax(ArrayLinearListImproved<Student> a)
     {
     	int size = 0;
     	
@@ -420,7 +430,7 @@ public class Notas implements Serializable
     	return size;
     }
     
-    public void setGPA(ArrayLinearListImproved<Student> a)
+    public static void setGPA(ArrayLinearListImproved<Student> a)
     {
     	int s = getMax(a);
     	
@@ -439,6 +449,73 @@ public class Notas implements Serializable
     	}
     }
     
+    public static void saveData(String fn, ArrayLinearListImproved<Student> a)
+    {
+    	try
+		{
+			PrintWriter pw = new PrintWriter(new File(fn));
+			
+			pw.println(a.size());
+			for(int i = 0; i < a.size(); i++)
+			{
+				pw.println(a.get(i).getId() + "|" + a.get(i).getName() + "|" + a.get(i).getGpa());
+				pw.println(a.get(i).getGrades().size());
+				
+				StringBuilder sb = new StringBuilder();
+				for(double q : a.get(i).getGrades())
+					sb.append(q + "|");
+				
+				pw.println(sb.toString().substring(0, sb.toString().length() - 1));
+			}
+			
+			pw.close();
+			
+			System.out.println("Done!");
+		}
+    	catch(IOException e)
+    	{
+			System.err.println("An error ocurred while saving");
+		}
+    }
+
+    public static ArrayLinearListImproved<Student> readData(String fn)
+    {
+    	ArrayLinearListImproved<Student> a = new ArrayLinearListImproved<>();
+    	
+    	try
+    	{
+    		BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(fn), "ASCII"));
+    		String z;
+    		
+    		while((z = br.readLine()) != null)
+    		{
+    			int n = Integer.parseInt(z);
+    			for(int i = 0; i < n; i++)
+    			{
+    				String[] l = br.readLine().split("\\|");
+    				Student s = new Student(Integer.parseInt(l[0]), l[1], Double.parseDouble(l[2]));
+    				int dSize = Integer.parseInt(br.readLine());
+    				ArrayLinearListImproved<Double> d = new ArrayLinearListImproved<>();
+    				l = br.readLine().split("\\|");
+    				
+    				for(String q : l)
+    					d.add(d.size(), Double.parseDouble(q));
+    				
+    				s.setGrades(d);
+    				
+    				a.add(a.size(), s);
+    			}
+    		}
+    		
+    	}
+    	catch(IOException e)
+    	{
+    		System.out.println();
+    	}
+    	
+    	return a;
+    }
+    
     public static void main(String[] args)
 	{
 		ArrayLinearListImproved<Student> ar = new ArrayLinearListImproved<>();
@@ -448,9 +525,9 @@ public class Notas implements Serializable
 			if(checkFile(args[0]))
 			{
 				Scanner sn = new Scanner(System.in);
-				ar.load(args[0]);
-				
 				fileName = args[0];
+				ar = readData(fileName);
+				
 				String command = "";
 
 				System.out.println("Welcome to the automated Grades System");
@@ -465,14 +542,15 @@ public class Notas implements Serializable
 					String[] commandArray = command.split("\\s");
 					commandParser(commandArray, ar);
 				}
-				while(!command.equalsIgnoreCase("quit") && !command.equalsIgnoreCase("q"));
+				while(!command.equalsIgnoreCase("quit") && !command.equalsIgnoreCase("qu"));
 			}
 	}
 }
 
-@SuppressWarnings("serial")
 class Student implements Serializable, Comparable<Student>
 {
+	
+	private static final long serialVersionUID = 1L;
 	private int id;
 	private String name;
 	private ArrayLinearListImproved<Double> grades;
@@ -491,9 +569,16 @@ class Student implements Serializable, Comparable<Student>
 		this.id = id;
 		this.name = name;
 		this.grades = grades;
-		this.gpa = 0;
+		this.gpa = gpa;
 	}
 
+	public Student(int id, String name,double gpa) 
+	{
+		this.id = id;
+		this.name = name;
+		this.gpa = gpa;
+	}
+	
 	public int getId() 
 	{
 		return id;
