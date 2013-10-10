@@ -3,10 +3,6 @@ package unal.datastructures;
 import java.io.*;
 import java.util.*;
 
-/**
- * TODO: Implement miscellaneous methods (As described on Assignment requirements)
- * @author JhonAlx
- */
 public class Notas implements Serializable
 {
 	/**
@@ -15,6 +11,7 @@ public class Notas implements Serializable
 	private static final long serialVersionUID = 1L;
 	//static ArrayLinearListImproved<Student> a;
 	private static String fileName;
+	private static Scanner sn;
 	
 	/**
 	 * Check the length of args[] to validate correct parameter input
@@ -79,12 +76,17 @@ public class Notas implements Serializable
 		System.out.println("create ID * (c) - Create a new register and prompt for each field information");
 		System.out.println("edit ID (e) - Allows to modify all accounts fields");
 		System.out.println("menu (m) - Print main menu");
+		System.out.println("print (p) - Print out all registered students");
 		System.out.println("remove ID (r) - Remove a student register");
 		System.out.println("query ID (q) - Print student information");
 		System.out.println("total (t) - Prints the course average");
 		System.out.println("quit (x) - Quit the system");
 	}
 
+	/**
+	 * Shows the course average GPA
+	 * @param a
+	 */
 	public static void totalAvg(ArrayLinearListImproved<Student> a)
 	{
 		double sum = 0;
@@ -99,6 +101,11 @@ public class Notas implements Serializable
 		System.out.println();
 	}
 	
+	/**
+	 * Checks the integrity and correctness of commands submitted by the user
+	 * @param command
+	 * @param a
+	 */
 	public static void commandParser(String[] command, ArrayLinearListImproved<Student> a)
 	{
 		switch(command[0])
@@ -271,6 +278,11 @@ public class Notas implements Serializable
 		}
 	}
 
+	/**
+	 * Removes specified ID from ArrayLinearListImproved<Student> if it exists 
+	 * @param param
+	 * @param a
+	 */
 	public static void remove(String param, ArrayLinearListImproved<Student> a)
 	{
 		int id = -1;
@@ -298,6 +310,11 @@ public class Notas implements Serializable
 			System.out.println("Error - ID doesn't exists!");
 	}
 	
+	/**
+	 * Prints the student with specified ID from ArrayLinearListImproved<Student> if it exists 
+	 * @param param
+	 * @param a
+	 */
 	public static void query(String param, ArrayLinearListImproved<Student> a)
 	{
 		int id = -1;
@@ -321,6 +338,13 @@ public class Notas implements Serializable
 			System.out.println("Error - ID doesn't exists");
 	}
 	
+	/**
+	 * Creates a Student using parameters from create command if the specified ID doesn't exists in the ArrayLinearListImproved<Student>
+	 * Create command should be written this way:
+	 * create ID Name [Comma separated list of grades eg: [1,2,3]]
+	 * @param params
+	 * @param a
+	 */
 	public static void createWithParameters(String[] params, ArrayLinearListImproved<Student> a)
 	{
 		int id = -1;
@@ -359,9 +383,16 @@ public class Notas implements Serializable
 		}
 	}
 	
+	/**
+	 * Creates a Student, verifies if the ID specified exists. If false, 
+	 * asks the user additional data to create the new Student and add it to the ArrayLinearList<Student>
+	 * 
+	 * @param param
+	 * @param a
+	 */
 	public static void createWithPrompt(String param, ArrayLinearListImproved<Student> a)
 	{
-		Scanner sn = new Scanner(System.in);
+		sn = new Scanner(System.in);
 		int id = -1, n;
 		ArrayLinearListImproved<Double> ar = new ArrayLinearListImproved<>();
 		String name;
@@ -398,7 +429,11 @@ public class Notas implements Serializable
 			a.add(a.size(), s);	
 		}
 	}
-	
+
+	/**
+	 * Applies grades rounding from 2.9 to 3.0
+	 * @param a
+	 */
 	public static void applyRounding(ArrayLinearListImproved<Student> a)
 	{
 		for(int i = 0; i < a.size(); i++)
@@ -420,33 +455,49 @@ public class Notas implements Serializable
 		}
 	}
 	
+	/**
+	 * Prints the content of a ArrayLinearListImproved<Student> formatted as a table
+	 * @param aa
+	 */
     public static void print( ArrayLinearListImproved<Student> aa )
     {
-		System.out.print("|\tID\t|\tName\t|\tGrades\t|\tGPA\t|\n");
+    	System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------------------");
+    	System.out.format("| %-20s | %-20s | %-80s | %-20s |", "ID", "Name", "Grades", "GPA");
+    	System.out.println();
+    	System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------------------");
 		for(Student s : aa){
-			System.out.print( "|\t" + s.getId() + "\t|\t" );
-			System.out.print(  s.getName( ) + "\t|\t");
-			System.out.print( s.getGrades( ) + "\t|\t" );
-			System.out.print( s.getGpa( ) + "\t|\t\n" );
+			System.out.format("| %-20d | %-20s | %-80s | %-20.2f |", s.getId(), s.getName(), s.getGrades(),  s.getGpa());
+			System.out.println();
 		}	
+		System.out.println("---------------------------------------------------------------------------------------------------------------------------------------------------------");
 	}
 	
+    /**
+     * Reads n grades and returns ArrayLinearListImproved<Double> containing grades;
+     * @param n
+     * @return ArrayLinearListImproved<Double>
+     */
     public static ArrayLinearListImproved<Double> addGrades( int n ) 
     {
     	ArrayLinearListImproved<Double> temp = new ArrayLinearListImproved<>();
-    	Scanner s = new Scanner(System.in);
+    	sn = new Scanner(System.in);
     	for(int i = 0; i < n; i++){
     		System.out.println("Enter grade #" + (i+1));
-    		double note = Double.parseDouble(s.nextLine());
+    		double note = Double.parseDouble(sn.nextLine());
     		temp.add( i, note );
     	} 
     	return temp;
     }
     
+    /**
+     * Add notes to a Student using specified ID 
+     * @param a
+     * @param param
+     */
     public static void addNotes( ArrayLinearListImproved<Student> a, String param)
     {
     	int id = -1;
-		Scanner sn = new Scanner(System.in);
+		sn = new Scanner(System.in);
     	
 		try
 		{
@@ -472,10 +523,15 @@ public class Notas implements Serializable
     	}
     }
 
+    /**
+     * Change name of a Student using specified ID
+     * @param param
+     * @param a
+     */
     public static void changeName (String param, ArrayLinearListImproved<Student> a)
     {
     	int id = -1;
-		Scanner sn = new Scanner(System.in);
+		sn = new Scanner(System.in);
     	
 		try
 		{
@@ -488,10 +544,10 @@ public class Notas implements Serializable
 		}
 		if(checkIfExists(id, a))
 		{
-			Scanner scan = new Scanner( System.in );
+			sn = new Scanner( System.in );
 	    	String oldName = null;
 	    	System.out.println( "Enter a new name: " );
-	    	String name = scan.nextLine( );
+	    	String name = sn.nextLine( );
 	    	for( Student s : a ){
 	    		if( s.getId() == id){
 	    			oldName = s.getName(); 
@@ -503,6 +559,11 @@ public class Notas implements Serializable
 			System.out.println("Error - ID doesn't exists");
     }
     
+    /**
+     * Gets max number of grades for any student, based on Student's internal ArrayLinearListImproved size 
+     * @param a
+     * @return size
+     */
     public static int getMax(ArrayLinearListImproved<Student> a)
     {
     	int size = 0;
@@ -516,6 +577,10 @@ public class Notas implements Serializable
     	return size;
     }
     
+    /**
+     * Sets GPA for every Student in ArrayLinearListImproved<Student>, based on (sum of notes) / (returned value of getMax()) 
+     * @param a
+     */
     public static void setGPA(ArrayLinearListImproved<Student> a)
     {
     	int s = getMax(a);
@@ -535,6 +600,11 @@ public class Notas implements Serializable
     	}
     }
     
+    /**
+     * Saves data stored in ArrayLinearListImproved<Student> to a specified file fn
+     * @param fn
+     * @param a
+     */
     public static void saveData(String fn, ArrayLinearListImproved<Student> a)
     {
     	try
@@ -564,6 +634,11 @@ public class Notas implements Serializable
 		}
     }
 
+    /**
+     * Loads data stored from specified file fn to an ArrayLinearListImproved<Student> 
+     * @param fn
+     * @return ArrayLinearListImproved<Student>
+     */
     public static ArrayLinearListImproved<Student> readData(String fn)
     {
     	ArrayLinearListImproved<Student> a = new ArrayLinearListImproved<>();
@@ -592,7 +667,7 @@ public class Notas implements Serializable
     				a.add(a.size(), s);
     			}
     		}
-    		
+    		br.close();
     	}
     	catch(IOException e)
     	{
@@ -602,15 +677,17 @@ public class Notas implements Serializable
     	return a;
     }
     
+    /**
+     * Main method
+     * @param args
+     */
     public static void main(String[] args)
 	{
 		ArrayLinearListImproved<Student> ar = new ArrayLinearListImproved<>();
-//		ar.add(0, new Student());
-//		ar.save(args[0]);
 		if(checkArgs(args))
 			if(checkFile(args[0]))
 			{
-				Scanner sn = new Scanner(System.in);
+				sn = new Scanner(System.in);
 				fileName = args[0];
 				ar = readData(fileName);
 				
@@ -636,6 +713,9 @@ public class Notas implements Serializable
 	}
 }
 
+/**
+ * Student class implementation
+ */
 class Student implements Serializable, Comparable<Student>
 {
 	
